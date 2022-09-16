@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sum_game/pages/home.dart';
-
+import 'package:get/get.dart';
+import '../controllers/Sum_Controller.dart';
 void main() {
+  Get.put(SumController());
   runApp(const MyApp());
 }
 

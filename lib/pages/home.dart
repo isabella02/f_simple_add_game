@@ -1,67 +1,20 @@
 import 'dart:math';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:get/get.dart';
+import '../controllers/Sum_Controller.dart';
 import '../widgets/op.dart';
 import '../widgets/resultButton.dart';
 
-extension RandomInt on int {
-  static int generate({int min = 0, required int max}) {
-    final _random = Random();
-    return min + _random.nextInt(max - min);
-  }
-}
-
-class SumWidget extends StatefulWidget {
+class SumWidget extends StatelessWidget {
   const SumWidget({Key? key}) : super(key: key);
 
-  @override
-  State<SumWidget> createState() => _SumWidgetState();
-}
-
-class _SumWidgetState extends State<SumWidget> {
-  late int op1;
-  late int op2;
-  late int rta;
-  List<int> vectorRta = [];
-  int score = 0;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  void onResultClick(int value) {
-    if (value == rta) {
-      score = score + 1;
-    }
-    setState(() {});
-  }
-
-  void setValues() {
-    op1 = RandomInt.generate(max: 50);
-    op2 = RandomInt.generate(max: 50);
-
-    rta = op1 + op2;
-    vectorRta.clear();
-    vectorRta.add(rta);
-    vectorRta.add(rta + 1);
-    vectorRta.add(rta - 1);
-    vectorRta.shuffle();
-  }
-
-  void reset() {
-    setState(() {
-      score = 0;
-    });
-
-    setValues();
-  }
 
   @override
 
   Widget build(BuildContext context) {
-    setValues();
+    SumController sumController = Get.put(SumController());
+    sumController.setValues();
     return Column(
       children: [
 
@@ -76,7 +29,7 @@ class _SumWidgetState extends State<SumWidget> {
                   children: [
                     const Spacer(flex: 1),
                     Text(
-                      'Score: $score',
+                      'Score: ${sumController.score}',
                       style: const TextStyle(
                         fontSize: 36,
                       ),
@@ -86,7 +39,7 @@ class _SumWidgetState extends State<SumWidget> {
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
                         onTap: () {
-                          reset();
+                          sumController.reset();
                         },
                         child: const Icon(Icons.replay),
                       ),
@@ -108,9 +61,9 @@ class _SumWidgetState extends State<SumWidget> {
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    OpWidget(text: op1.toString()),
+                    Obx(() => OpWidget(text: sumController.op1.toString())),
                     const OpWidget(text: '+'),
-                    OpWidget(text: op2.toString()),
+                    Obx(() => OpWidget(text: sumController.op2.toString())),
                     const OpWidget(text: '='),
                     const OpWidget(text: '?'),
                   ]),
@@ -126,14 +79,17 @@ class _SumWidgetState extends State<SumWidget> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              resultButton(vectorRta[0], onResultClick),
-              resultButton(vectorRta[1], onResultClick),
-              resultButton(vectorRta[2], onResultClick),
+              Obx(() => resultButton(sumController.vectorRta[0])),
+              Obx(() => resultButton(sumController.vectorRta[1])),
+              Obx(() => resultButton(sumController.vectorRta[2])),
             ],
           ),
         )
       ],
     );
   }
+  
 }
+
+
 
